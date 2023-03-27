@@ -5,5 +5,5 @@ cs231n 강의의 Assignment 풀이 업로드 입니다.
 
 ## 기록
 ### 23.03.26 : knn 업로드 <br>
-knn.ipynb : https://github.com/uijoon/cs231n/blob/master/assignment1/knn.ipynb <br>
-k_nearest_neighbor.py : https://github.com/uijoon/cs231n/blob/master/assignment1/cs231n/classifiers/k_nearest_neighbor.py
+[knn.ipynb](https://github.com/uijoon/cs231n/blob/master/assignment1/knn.ipynb) <br>
+[k_nearest_neighbor.py](https://github.com/uijoon/cs231n/blob/master/assignment1/cs231n/classifiers/k_nearest_neighbor.py)
