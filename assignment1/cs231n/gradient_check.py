@@ -113,17 +113,17 @@ def grad_check_sparse(f, x, analytic_grad, num_checks=10, h=1e-5):
     """
 
     for i in range(num_checks):
-        ix = tuple([randrange(m) for m in x.shape])
-
-        oldval = x[ix]
+        ix = tuple([randrange(m) for m in x.shape]) # X에서 인덱스를 가져옴,(행,열)로
+    
+        oldval = x[ix] # X의 값
         x[ix] = oldval + h  # increment by h
-        fxph = f(x)  # evaluate f(x + h)
+        fxph = f(x)  # evaluate f(x + h), x+h일 때 loss값
         x[ix] = oldval - h  # increment by h
-        fxmh = f(x)  # evaluate f(x - h)
-        x[ix] = oldval  # reset
-
-        grad_numerical = (fxph - fxmh) / (2 * h)
-        grad_analytic = analytic_grad[ix]
+        fxmh = f(x)  # evaluate f(x - h), x-h일 때 loss값
+        x[ix] = oldval  # reset, 초기값
+        
+        grad_numerical = (fxph - fxmh) / (2 * h) # x값의 변화에 따른 grad
+        grad_analytic = analytic_grad[ix] # linear_svm으로 구했던 grad
         rel_error = abs(grad_numerical - grad_analytic) / (
             abs(grad_numerical) + abs(grad_analytic)
         )
@@ -131,3 +131,4 @@ def grad_check_sparse(f, x, analytic_grad, num_checks=10, h=1e-5):
             "numerical: %f analytic: %f, relative error: %e"
             % (grad_numerical, grad_analytic, rel_error)
         )
+      

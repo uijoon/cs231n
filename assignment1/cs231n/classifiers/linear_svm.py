@@ -30,7 +30,7 @@ def svm_loss_naive(W, X, y, reg):
     loss = 0.0
     for i in range(num_train):
         scores = X[i].dot(W)
-        correct_class_score = scores[y[i]]
+        correct_class_score = scores[y[i]] # 정답 레이블의 스코어
         for j in range(num_classes):
             if j == y[i]:
                 continue
@@ -41,9 +41,8 @@ def svm_loss_naive(W, X, y, reg):
     # Right now the loss is a sum over all training examples, but we want it
     # to be an average instead so we divide by num_train.
     loss /= num_train
-
     # Add regularization to the loss.
-    loss += reg * np.sum(W * W)
+    loss += reg * np.sum(W * W) # L2-regularization term
 
     #############################################################################
     # TODO:                                                                     #
@@ -55,7 +54,15 @@ def svm_loss_naive(W, X, y, reg):
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    dW += 2*reg*W # regularization-term derivative
+    XW = X.dot(W) 
+    for i in range(XW.shape[0]):
+      correct_class_score = XW[i,y[i]]
+      for j in range(XW.shape[1]):
+        if (XW[i][j] > correct_class_score - 1) & (j != y[i]): # max(0,)
+          dW[:,y[i]] -= X[i,:]/num_train
+          dW[:,j] += X[i,:]/num_train
+
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
@@ -70,15 +77,21 @@ def svm_loss_vectorized(W, X, y, reg):
     """
     loss = 0.0
     dW = np.zeros(W.shape)  # initialize the gradient as zero
-
+    
     #############################################################################
     # TODO:                                                                     #
     # Implement a vectorized version of the structured SVM loss, storing the    #
     # result in loss.                                                           #
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+    num_train = X.shape[0]
+    score = X.dot(W)
+    score_yi = score[range(num_train),y].reshape(-1,1)
+    score = score - score_yi + 1          
+    score[range(num_train),y] = 0          
+    loss += np.sum(score[np.where(score>0)])/num_train # max(0,s_j - s_yi + 1)/num_train
+    loss += reg*np.sum(W*W)
 
-    pass
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
@@ -92,8 +105,12 @@ def svm_loss_vectorized(W, X, y, reg):
     # loss.                                                                     #
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+    mask = np.zeros(score.shape)
+    mask[np.where(score>0)] = 1/num_train # delta-1>0 일 때 1로 적용
+    mask[range(num_train),y] = -np.sum(mask,axis=1) # delta-1>0인 개수만큼 dW에 적용
 
-    pass
+    dW += X.T.dot(mask)
+    dW += 2*reg*W
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
